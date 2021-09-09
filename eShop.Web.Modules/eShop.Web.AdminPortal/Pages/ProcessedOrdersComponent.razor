@@ -1,0 +1,21 @@
+﻿@page "/processedorders"
+
+@*@attribute [Authorize]*@
+
+@inject IProcessedOrdersUseCase processedOrdersUseCase;
+
+<h3>Processed Orders</h3>
+<br />
+
+<eShop.Web.AdminPortal.Controls.OrdersListComponent orders="orders"></eShop.Web.AdminPortal.Controls.OrdersListComponent>
+
+@code {
+    private IEnumerable<Order> orders;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        orders = processedOrdersUseCase.Execute();
+    }
+}

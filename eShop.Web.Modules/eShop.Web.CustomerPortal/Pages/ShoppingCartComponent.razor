@@ -1,0 +1,57 @@
+﻿@page "/cart"
+
+@inject eShop.UseCases.ShoppingCartScreen.IViewShoppingCartUserCase shoppingCart;
+
+<h3>Shopping Cart</h3>
+
+<hr />
+
+@if (order != null)
+{
+    <div class="row">
+        <div class="col-6">
+            <ul>
+                @for (int i = 0; i < order.LineItems.Count(); i++)
+                {
+                    <LineItemComponent LineItem="order.LineItems[i]"
+                                       OnUpdateQuantity="HandleUpdateQuantity"
+                                       OnDeleteProduct="HandleDeleteProduct">
+                    </LineItemComponent>
+
+                    @if (i < order.LineItems.Count() - 1)
+                    {
+                        <li style="list-style:none">
+                            <hr />
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        <div class="col-6">
+            <OrderSummary Order="order"></OrderSummary>
+        </div>
+    </div>
+}
+
+@code {
+    public Order order { get; set; }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            order = await this.shoppingCart.Execute();
+            StateHasChanged();
+        }
+    }
+
+    private void HandleUpdateQuantity(Order order)
+    {
+        this.order = order;
+    }
+
+    private void HandleDeleteProduct(Order order)
+    {
+        this.order = order;
+    }
+}

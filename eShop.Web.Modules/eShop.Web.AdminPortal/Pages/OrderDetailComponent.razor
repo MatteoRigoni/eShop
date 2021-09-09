@@ -1,0 +1,84 @@
+﻿@page "/orderdetail/{id:int}"
+
+@attribute [Authorize]
+
+@inject IViewOrderDetailsUseCase viewOrderDetailsUseCase
+@inject IProcessOrderUseCase processOrderUseCase
+@inject NavigationManager navigationManager
+
+<h3>Order detail</h3>
+<br />
+
+@if (order != null)
+{
+    <div class="row">
+        <div class="col">
+            <p><b>Shipping info detail</b></p>
+            <p>Name: @order.CustomerName</p>
+            <p>Address: @order.CustomerAddress</p>
+            <p>City: @order.CustomerCity</p>
+            <p>Country: @order.CustomerCountry</p>
+        </div>
+    </div>
+
+    <br />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in order.LineItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <button type="button" class="btn btn-primary" @onclick="HandleProcessOrder">Mark order as processed</button>
+}
+
+@code {
+    private Order order;
+
+    private AuthenticationState authState;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authStateTask;
+    }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Id > 0)
+        {
+            order = viewOrderDetailsUseCase.Execute(Id);
+        }
+    }
+
+    private void HandleProcessOrder()
+    {
+        if (order != null && authState != null)
+        {
+            processOrderUseCase.Execute(order.OrderId.Value, authState.User.Identity.Name);
+            navigationManager.NavigateTo("/outstandingorders");
+        }
+    }
+}

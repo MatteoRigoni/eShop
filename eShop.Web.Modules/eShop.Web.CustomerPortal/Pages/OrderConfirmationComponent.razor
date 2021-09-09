@@ -1,0 +1,62 @@
+﻿@page "/orderconfirm/{uniqueId}"
+
+@inject IOrderConfirmationUseCase confirmationUsecase;
+
+<h3>Order confirmation</h3>
+<br />
+
+@if (order != null)
+{
+    <div class="row">
+        <div class="col">
+            <p><b>Shipping info detail</b></p>
+            <p>Name: @order.CustomerName</p>
+            <p>Address: @order.CustomerAddress</p>
+            <p>City: @order.CustomerCity</p>
+            <p>Country: @order.CustomerCountry</p>
+        </div>
+        <div class="col">
+            <OrderSummary Order="order" HidePlaceOrderButton="true"></OrderSummary>
+        </div>
+    </div>
+    
+    <br />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in order.LineItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Order order;
+
+    [Parameter]
+    public string UniqueId { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (!string.IsNullOrEmpty(UniqueId))
+        {
+            order = confirmationUsecase.Execute(UniqueId);
+        }
+    }
+
+}

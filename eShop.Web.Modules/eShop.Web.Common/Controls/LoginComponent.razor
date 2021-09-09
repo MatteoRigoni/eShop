@@ -1,0 +1,38 @@
+﻿@inject NavigationManager navigationManager ;
+
+<h3>Login</h3>
+
+@if (model != null)
+{
+<Microsoft.AspNetCore.Components.Forms.EditForm style="width: 15rem" Model="model" OnValidSubmit="HandleFormSubmitted" class="form">
+    <Microsoft.AspNetCore.Components.Forms.DataAnnotationsValidator></Microsoft.AspNetCore.Components.Forms.DataAnnotationsValidator>
+    <Microsoft.AspNetCore.Components.Forms.ValidationSummary></Microsoft.AspNetCore.Components.Forms.ValidationSummary>
+
+    <div class="form-group">
+        <label for="username">Username</label>
+        <Microsoft.AspNetCore.Components.Forms.InputText id="username" @bind-Value="model.Username" class="form-control"></Microsoft.AspNetCore.Components.Forms.InputText>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <Microsoft.AspNetCore.Components.Forms.InputText id="password" @bind-Value="model.Password" class="form-control"></Microsoft.AspNetCore.Components.Forms.InputText>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</Microsoft.AspNetCore.Components.Forms.EditForm>
+}
+
+@code {
+    private LoginViewModel model;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        model = new LoginViewModel();
+    }
+
+    private void HandleFormSubmitted()
+    {
+        navigationManager.NavigateTo($"/authenticate?username={model.Username}&password={model.Password}", true);
+    }
+}
